@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "com.jab125.earlyloadingscreen.mixin",
+  "plugin": "com.jab125.earlyloadingscreen.mixin.MixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ExampleMixin",
+    "SplashOverlayAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MainMixin",
+    "MinecraftClientMixin",
+    "WindowMixin",
+    "compat.fancymenu.ForgeLoadingOverlayMixin"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.jab125.earlyloadingscreen.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.jab125.earlyloadingscreen.util.HooksMixinInit",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+  ]
+}

@@ -1,0 +1,46 @@
+{
+	"schemaVersion": 1,
+	"id": "early-loading-screen",
+	"version": "${version}",
+	"name": "Forge Early Loading Screen",
+	"description": "Direct port of earlydisplay from FML",
+	"authors": [
+		"Jab125"
+	],
+	"contributors": [
+		"NeoForged Team",
+		"MinecraftForge Team"
+	],
+	"contact": {
+	},
+	"license": "LGPL-2.1-only",
+	"icon": "assets/early-loading-screen/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"com.jab125.earlyloadingscreen.ExampleMod"
+		],
+		"preLaunch": [
+			"com.jab125.earlyloadingscreen.test.Test"
+		],
+		"early-loading-screen-hook-provider": ["com.jab125.earlyloadingscreen.util.Provider"]
+	},
+	"mixins": [
+		"early-loading-screen.mixins.json",
+		"early-loading-screen-plugin.mixins.json"
+	],
+	"languageAdapters": {
+		"els-asddsjkh": "com.jab125.earlyloadingscreen.util.HooksLaInit"
+	},
+	"depends": {
+		"fabricloader": ">=0.14.22",
+		"minecraft": "~1.20.1",
+		"java": ">=17"
+	},
+	"custom": {
+		"springboard:mod-suggestor": "com.jab125.earlyloadingscreen.special.Suggestor",
+		"sodium:options": {
+			"mixin.workarounds.context_creation": false
+		}
+	}
+}
