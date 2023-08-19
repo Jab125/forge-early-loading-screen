@@ -33,7 +33,9 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
-	mavenLocal()
+	maven {
+		url = "https://maven.jab125.dev/"
+	}
 	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
