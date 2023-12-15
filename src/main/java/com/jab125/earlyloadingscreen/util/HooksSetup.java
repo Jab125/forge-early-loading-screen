@@ -3,11 +3,13 @@ package com.jab125.earlyloadingscreen.util;
 import com.jab125.earlyloadingscreen.mixin.MainMixin;
 import com.jab125.earlyloadingscreen.needed.Hooks;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraftforge.fml.StartupMessageManager;
-import net.minecraftforge.fml.loading.ImmediateWindowHandler;
-import net.minecraftforge.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.loading.ImmediateWindowHandler;
+import net.neoforged.fml.loading.progress.ProgressMeter;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -18,7 +20,12 @@ public class HooksSetup {
     public static void init(String[] args) {
         if (already) return;
         already = true;
-        ImmediateWindowHandler.load("forgeclient", args);
+        ArrayList<String> strings = new ArrayList<>(Arrays.stream(args).toList());
+        strings.add("--fml.mcVersion");
+        strings.add(FabricLoader.getInstance().getModContainer("minecraft").map(a -> a.getMetadata().getVersion().getFriendlyString()).orElse("NONE"));
+        strings.add("--fml.neoForgeVersion");
+        strings.add(FabricLoader.getInstance().getModContainer("fabricloader").map(a -> a.getMetadata().getVersion().getFriendlyString()).orElse("NONE"));
+        ImmediateWindowHandler.load("forgeclient", strings.toArray(new String[0]));
         try { HooksSetup.setupHooks(); } catch (Throwable t) {t.printStackTrace();}
         ImmediateWindowHandler.updateProgress("Launching Minecraft");
         ImmediateWindowHandler.renderTick();

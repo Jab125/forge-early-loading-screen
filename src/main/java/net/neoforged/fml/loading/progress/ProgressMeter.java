@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading.progress;
+package net.neoforged.fml.loading.progress;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ProgressMeter {
     private final String name;
     private final int steps;
-    public final String originalName;
     private AtomicInteger current;
+
+    public final String originalName;
     private Message label;
 
     public ProgressMeter(String name, int steps, int current, Message label) {

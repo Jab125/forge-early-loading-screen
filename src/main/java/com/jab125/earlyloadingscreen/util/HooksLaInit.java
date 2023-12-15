@@ -3,7 +3,7 @@ package com.jab125.earlyloadingscreen.util;
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.LanguageAdapterException;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraftforge.fml.earlydisplay.DisplayWindow;
+import net.neoforged.fml.earlydisplay.DisplayWindow;
 import springboard.init.Init;
 
 public class HooksLaInit implements LanguageAdapter {

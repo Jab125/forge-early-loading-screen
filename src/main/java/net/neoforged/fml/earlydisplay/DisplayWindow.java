@@ -1,18 +1,19 @@
 /*
- * Copyright (c) Forge Development LLC and contributors & Jab125
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.earlydisplay;
+package net.neoforged.fml.earlydisplay;
 
 import joptsimple.OptionParser;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceReload;
-import net.minecraftforge.client.loading.NoVizFallback;
-import net.minecraftforge.fml.loading.ImmediateWindowHandler;
-import net.minecraftforge.fml.loading.ImmediateWindowProvider;
-import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.fml.loading.FMLConfig;
+import net.neoforged.fml.loading.ImmediateWindowHandler;
+import net.neoforged.fml.loading.ImmediateWindowProvider;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.loading.NoVizFallback;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWImage;
@@ -33,11 +34,7 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalQueries;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,11 +42,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -91,6 +84,7 @@ public class DisplayWindow implements ImmediateWindowProvider {
     private int framecount;
     private EarlyFramebuffer framebuffer;
     private ScheduledFuture<?> windowTick;
+    private ScheduledFuture<?> initializationFuture;
 
     private PerformanceInfo performanceInfo;
     private ScheduledFuture<?> performanceTick;
@@ -119,8 +113,8 @@ public class DisplayWindow implements ImmediateWindowProvider {
     @Override
     public Runnable initialize(String[] arguments) {
         final OptionParser parser = new OptionParser();
-        // var mcversionopt = parser.accepts("fml.mcVersion").withRequiredArg().ofType(String.class);
-       // var forgeversionopt = parser.accepts("fml.forgeVersion").withRequiredArg().ofType(String.class);
+        var mcversionopt = parser.accepts("fml.mcVersion").withRequiredArg().ofType(String.class);
+        var forgeversionopt = parser.accepts("fml.neoForgeVersion").withRequiredArg().ofType(String.class);
         var widthopt = parser.accepts("width")
                 .withRequiredArg().ofType(Integer.class)
                 .defaultsTo(FMLConfig.getIntConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_WIDTH));
@@ -139,7 +133,7 @@ public class DisplayWindow implements ImmediateWindowProvider {
             this.colourScheme = ColourScheme.BLACK;
         } else {
             try {
-                var optionLines = Files.readAllLines(getGameDir().resolve(Paths.get("options.txt")));
+                var optionLines = Files.readAllLines(FabricLoader.getInstance().getGameDir().resolve(Paths.get("options.txt")));
                 var options = optionLines.stream().map(l -> l.split(":")).filter(a -> a.length == 2).collect(Collectors.toMap(a -> a[0], a -> a[1]));
                 var colourScheme = Boolean.parseBoolean(options.getOrDefault("darkMojangStudiosBackground", "false"));
                 this.colourScheme = colourScheme ? ColourScheme.BLACK : ColourScheme.RED;
@@ -150,18 +144,10 @@ public class DisplayWindow implements ImmediateWindowProvider {
         }
         this.maximized = parsed.has(maximizedopt) || FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_MAXIMIZED);
 
-        var forgeVersion = FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion().getFriendlyString();// parsed.valueOf(forgeversionopt);
+        var forgeVersion = parsed.valueOf(forgeversionopt);
         StartupNotificationManager.modLoaderConsumer().ifPresent(c->c.accept("Fabric loading "+ forgeVersion));
         performanceInfo = new PerformanceInfo();
-        return start(FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().getFriendlyString()/*parsed.valueOf(mcversionopt)*/, forgeVersion);
-    }
-
-    private Path getGameDir() {
-        try {
-            return FabricLoader.getInstance().getGameDir();
-        } catch (Throwable t) {
-            return Path.of(".");
-        }
+        return start(parsed.valueOf(mcversionopt), forgeVersion);
     }
 
     private static final long MINFRAMETIME = TimeUnit.MILLISECONDS.toNanos(10); // This is the FPS cap on the window - note animation is capped at 20FPS via the tickTimer
@@ -278,7 +264,6 @@ public class DisplayWindow implements ImmediateWindowProvider {
     public void render(int alpha) {
         var currentVAO = glGetInteger(GL_VERTEX_ARRAY_BINDING);
         var currentFB = glGetInteger(GL_READ_FRAMEBUFFER_BINDING);
-        glfwSwapInterval(0);
         glViewport(0, 0, this.context.scaledWidth(), this.context.scaledHeight());
         RenderElement.globalAlpha = alpha;
         framebuffer.activate();
@@ -301,7 +286,7 @@ public class DisplayWindow implements ImmediateWindowProvider {
             return thread;
         });
         initWindow(mcVersion);
-        renderScheduler.schedule(() -> initRender(mcVersion, forgeVersion), 1, TimeUnit.MILLISECONDS);
+        this.initializationFuture = renderScheduler.schedule(() -> initRender(mcVersion, forgeVersion), 1, TimeUnit.MILLISECONDS);
         return this::periodicTick;
     }
 
@@ -329,12 +314,12 @@ public class DisplayWindow implements ImmediateWindowProvider {
         LOGGER.error("ERROR DISPLAY\n"+msgBuilder);
         // we show the display on a new dedicated thread
         Executors.newSingleThreadExecutor().submit(()-> {
-            var res = TinyFileDialogs.tinyfd_messageBox("Minecraft: NeoForge", msgBuilder.toString(), "yesno", "error", false);
+            var res = TinyFileDialogs.tinyfd_messageBox("Minecraft: Fabric", msgBuilder.toString(), "yesno", "error", false);
             if (res) {
                 try {
                     Desktop.getDesktop().browse(URI.create(ERROR_URL));
                 } catch (IOException ioe) {
-                    TinyFileDialogs.tinyfd_messageBox("Minecraft: NeoForge", "Sadly, we couldn't open your browser.\nVisit " + ERROR_URL, "ok", "error", false);
+                    TinyFileDialogs.tinyfd_messageBox("Minecraft: Fabric", "Sadly, we couldn't open your browser.\nVisit " + ERROR_URL, "ok", "error", false);
                 }
             }
             System.exit(1);
@@ -465,13 +450,13 @@ public class DisplayWindow implements ImmediateWindowProvider {
         try (var glfwImgBuffer = GLFWImage.create(MemoryUtil.getAllocator().malloc(GLFWImage.SIZEOF), 1)) {
             final ByteBuffer imgBuffer;
             try (GLFWImage glfwImages = GLFWImage.malloc()) {
-                imgBuffer = STBHelper.loadImageFromClasspath("squirrel.png", 20000, x, y, channels);
+                imgBuffer = STBHelper.loadImageFromClasspath("neoforged_icon.png", 20000, x, y, channels);
                 glfwImgBuffer.put(glfwImages.set(x[0], y[0], imgBuffer));
                 glfwSetWindowIcon(window, glfwImgBuffer);
                 STBImage.stbi_image_free(imgBuffer);
             }
         } catch (NullPointerException e) {
-            System.err.println("Failed to load forge logo");
+            System.err.println("Failed to load NeoForged icon");
         }
         handleLastGLFWError((error, description) -> LOGGER.debug(String.format("Suppressing GLFW icon error: [0x%X]%s", error, description)));
 
@@ -532,6 +517,15 @@ public class DisplayWindow implements ImmediateWindowProvider {
      * @return the Window we own.
      */
     public long setupMinecraftWindow(final IntSupplier width, final IntSupplier height, final Supplier<String> title, final LongSupplier monitorSupplier) {
+        // wait for the window to actually be initialized
+        try {
+            this.initializationFuture.get(30, TimeUnit.SECONDS);
+        } catch(InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch(TimeoutException e) {
+            Thread.dumpStack();
+            crashElegantly("We seem to be having trouble initializing the window, waited for 30 seconds");
+        }
         // we have to spin wait for the window ticker
         ImmediateWindowHandler.updateProgress("Initializing Game Graphics");
         while (!this.windowTick.isDone()) {
@@ -598,11 +592,9 @@ public class DisplayWindow implements ImmediateWindowProvider {
 
     @Override
     public void updateModuleReads(final ModuleLayer layer) {
-//        var fm = layer.findModule("forge").orElseThrow();
-//        getClass().getModule().addReads(fm);
         Class<?> clz = null;
         try {
-            clz = Class.forName("net.minecraftforge.client.loading.ForgeLoadingOverlay");
+            clz = Class.forName("net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -640,37 +632,5 @@ public class DisplayWindow implements ImmediateWindowProvider {
     @Override
     public void crash(final String message) {
         crashElegantly(message);
-    }
-
-    private static class FMLConfig {
-        public static int getIntConfigValue(int i) {
-            return switch (i) {
-                case ConfigValue.EARLY_WINDOW_HEIGHT -> 480;
-                case ConfigValue.EARLY_WINDOW_WIDTH -> 854;
-                case ConfigValue.EARLY_WINDOW_FBSCALE -> 1;
-                default -> 0;
-            };
-        }
-
-        public static <T> List<T> getListConfigValue(int i) {
-            return List.of();
-        }
-
-        public static boolean getBoolConfigValue(int i) {
-            return false;
-        }
-
-        public static void updateConfig(Object o, Object i) {
-
-        }
-
-        public static class ConfigValue {
-            public static final int EARLY_WINDOW_SKIP_GL_VERSIONS = 209;
-            public static final int EARLY_WINDOW_MAXIMIZED = 15;
-            public static final int EARLY_WINDOW_SQUIR = 29087;
-            public static final int EARLY_WINDOW_WIDTH = 29080;
-            public static final int EARLY_WINDOW_HEIGHT = 2098;
-            public static final int EARLY_WINDOW_FBSCALE = 20839;
-        }
     }
 }

@@ -1,43 +1,43 @@
 /*
- * Copyright (c) Forge Development LLC and contributors & Jab125
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.client.loading;
+package net.neoforged.neoforge.client.loading;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.mojang.blaze3d.systems.VertexSorter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.render.*;
-import net.minecraft.resource.ResourceReload;
 import net.minecraft.util.Identifier;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.StartupMessageManager;
-import net.minecraftforge.fml.earlydisplay.ColourScheme;
-import net.minecraftforge.fml.earlydisplay.DisplayWindow;
-import net.minecraftforge.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.StartupMessageManager;
+import net.neoforged.fml.earlydisplay.ColourScheme;
+import net.neoforged.fml.earlydisplay.DisplayWindow;
+import net.neoforged.fml.loading.progress.ProgressMeter;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30C;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
- * game loading cycle. We completely replace the {@link #render(net.minecraft.client.gui.DrawContext, int, int, float)} call from the parent
+ * game loading cycle. We completely replace the {@link #render(DrawContext, int, int, float)} call from the parent
  * with one of our own, that allows us to blend our early loading screen into the main window, in the same manner as
  * the Mojang screen. It also allows us to see and tick appropriately as the later stages of the loading system run.
  *
  * It is somewhat a copy of the superclass render method.
  */
-public class ForgeLoadingOverlay extends SplashOverlay {
+public class NeoForgeLoadingOverlay extends SplashOverlay {
     private final MinecraftClient minecraft;
     private final ResourceReload reload;
     private final Consumer<Optional<Throwable>> onFinish;
@@ -45,7 +45,7 @@ public class ForgeLoadingOverlay extends SplashOverlay {
     private final ProgressMeter progress;
     private long fadeOutStart = -1L;
 
-    public ForgeLoadingOverlay(final MinecraftClient mc, final ResourceReload reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
+    public NeoForgeLoadingOverlay(final MinecraftClient mc, final ResourceReload reloader, final Consumer<Optional<Throwable>> errorConsumer, DisplayWindow displayWindow) {
         super(mc, reloader, errorConsumer, false);
         this.minecraft = mc;
         this.reload = reloader;
@@ -55,17 +55,15 @@ public class ForgeLoadingOverlay extends SplashOverlay {
         this.progress = StartupMessageManager.prependProgressBar("Minecraft Progress", 100);
     }
 
-
     public static Supplier<SplashOverlay> newInstance(Supplier<MinecraftClient> mc, Supplier<ResourceReload> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
-       // return NoVizFallback.loadingOverlay(mc, ri, handler, true);
-        return ()->new ForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
+        return () -> new NeoForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
     }
 
     @Override
     public void render(final @NotNull DrawContext graphics, final int mouseX, final int mouseY, final float partialTick) {
         long millis = Util.getEpochTimeMs();
-        float fadeouttimer = this.fadeOutStart > -1L ? (float)(millis - this.fadeOutStart) / 1000.0F : -1.0F;
-        progress.setAbsolute(MathHelper.clamp((int)(this.reload.getProgress() * 100f), 0, 100));
+        float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
+        progress.setAbsolute(MathHelper.clamp((int) (this.reload.getProgress() * 100f), 0, 100));
         var fade = 1.0F - MathHelper.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
         var colour = this.displayWindow.context().colourScheme().background();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
@@ -86,8 +84,8 @@ public class ForgeLoadingOverlay extends SplashOverlay {
         GL30C.glViewport(0, 0, fbWidth, fbHeight);
         final var twidth = this.displayWindow.context().width();
         final var theight = this.displayWindow.context().height();
-        var wscale = (float)fbWidth / twidth;
-        var hscale = (float)fbHeight / theight;
+        var wscale = (float) fbWidth / twidth;
+        var hscale = (float) fbHeight / theight;
         var scale = this.displayWindow.context().scale() * Math.min(wscale, hscale) / 2f;
         var wleft = MathHelper.clamp(fbWidth * 0.5f - scale * twidth, 0, fbWidth);
         var wtop = MathHelper.clamp(fbHeight * 0.5f - scale * theight, 0, fbHeight);
@@ -136,7 +134,7 @@ public class ForgeLoadingOverlay extends SplashOverlay {
 
         if (this.fadeOutStart == -1L && this.reload.isComplete()) {
             progress.complete();
-            this.fadeOutStart = Util.getEpochTimeMs();
+            this.fadeOutStart = Util.getMeasuringTimeMs();
             try {
                 this.reload.throwException();
                 this.onFinish.accept(Optional.empty());

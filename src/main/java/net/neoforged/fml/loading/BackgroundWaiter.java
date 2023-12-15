@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading;
-
-import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
+package net.neoforged.fml.loading;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

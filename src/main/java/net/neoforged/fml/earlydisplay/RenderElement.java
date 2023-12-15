@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.earlydisplay;
+package net.neoforged.fml.earlydisplay;
 
-import net.minecraftforge.fml.loading.progress.Message;
-import net.minecraftforge.fml.loading.progress.ProgressMeter;
-import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.fml.loading.progress.Message;
+import net.neoforged.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 
 import java.util.ArrayList;
 import java.util.List;

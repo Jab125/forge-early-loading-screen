@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading;
+package net.neoforged.fml.loading;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * This is for allowing the plugging in of alternative early display implementations.
  *
- * They can be selected through the config value "earlyWindowProvider" which defaults to "fmlearlywindow" implemented by {@link net.minecraftforge.fml.earlydisplay.DisplayWindow}
+ * They can be selected through the config value "earlyWindowProvider" which defaults to "fmlearlywindow" implemented by {@link net.neoforged.fml.earlydisplay.DisplayWindow}
  *
  * There are a few key things to keep in mind if following through on implementation. You cannot access the game state as it
  * literally DOES NOT EXIST at the time this object is constructed. You have to be very careful about managing the handoff
@@ -108,7 +108,7 @@ public interface ImmediateWindowProvider {
     void periodicTick();
 
     /**
-     * This is called to construct a {@link net.minecraftforge.forgespi.locating.ForgeFeature} for the GL_VERSION we
+     * This is called to construct a {@link net.neoforged.neoforgespi.locating.ForgeFeature} for the GL_VERSION we
      * managed to create for the window. Should be a string of the format {MAJOR}.{MINOR}, such as 4.6, 4.5 or such.
      *
      * @return the GL profile we created

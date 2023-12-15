@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.earlydisplay;
+package net.neoforged.fml.earlydisplay;
 
 import java.nio.IntBuffer;
 
-import static net.minecraftforge.fml.earlydisplay.RenderElement.clamp;
+import static net.neoforged.fml.earlydisplay.RenderElement.clamp;
 import static org.lwjgl.opengl.GL32C.*;
 
 public class EarlyFramebuffer {
@@ -52,7 +52,7 @@ public class EarlyFramebuffer {
         glClearColor(colour.redf(), colour.greenf(), colour.bluef(), 1f);
         glClear(GL_COLOR_BUFFER_BIT);
         // src Y are flipped, since our FB is flipped
-        glBlitFramebuffer(0, this.context.height() * this.context.scale(), this.context.width() * this.context.scale(), 0, clamp(wleft, 0, windowFBWidth), clamp(wtop, 0, windowFBHeight), clamp(wright, 0, windowFBWidth), clamp(wbottom, 0, windowFBHeight), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebuffer(0, this.context.height() * this.context.scale(), this.context.width() * this.context.scale(), 0, RenderElement.clamp(wleft, 0, windowFBWidth), RenderElement.clamp(wtop, 0, windowFBHeight), RenderElement.clamp(wright, 0, windowFBWidth), RenderElement.clamp(wbottom, 0, windowFBHeight), GL_COLOR_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 

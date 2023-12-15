@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.earlydisplay;
+package net.neoforged.fml.earlydisplay;
 
 
 import static org.lwjgl.opengl.GL32C.*;

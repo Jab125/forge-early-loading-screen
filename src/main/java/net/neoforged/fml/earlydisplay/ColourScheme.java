@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.earlydisplay;
+package net.neoforged.fml.earlydisplay;
 
 public enum ColourScheme {
     RED(new Colour(239, 50, 61), new Colour(255, 255, 255)),

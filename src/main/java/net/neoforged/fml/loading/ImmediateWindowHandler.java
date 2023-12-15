@@ -1,14 +1,14 @@
 /*
- * Copyright (c) Forge Development LLC and contributors & Jab125
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading;
+package net.neoforged.fml.loading;
 
 import com.jab125.earlyloadingscreen.Loader;
-import net.minecraftforge.fml.earlydisplay.DisplayWindow;
-import net.minecraftforge.fml.loading.progress.ProgressMeter;
-import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.fml.earlydisplay.DisplayWindow;
+import net.neoforged.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,40 +24,32 @@ public class ImmediateWindowHandler {
     private static ImmediateWindowProvider provider;
 
     private static ProgressMeter earlyProgress;
-
-    private static final boolean EARLY_WINDOW_CONTROL = true;
-    private static final String EARLY_WINDOW_PROVIDER = "fmlearlywindow";
     public static void load(final String launchTarget, final String[] arguments) {
         if (!List.of("forgeclient", "forgeclientuserdev", "forgeclientdev").contains(launchTarget)) {
             provider = new DummyProvider();
             LOGGER.info("ImmediateWindowProvider not loading because launch target is {}", launchTarget);
-        } else if (!EARLY_WINDOW_CONTROL) {
+        } else if (!FMLConfig.getBoolConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_CONTROL)) {
             provider = new DummyProvider();
             LOGGER.info("ImmediateWindowProvider not loading because splash screen is disabled");
         } else {
-            final var providername = EARLY_WINDOW_PROVIDER;
+            final var providername = FMLConfig.getConfigValue(FMLConfig.ConfigValue.EARLY_WINDOW_PROVIDER);
             LOGGER.info("Loading ImmediateWindowProvider {}", providername);
-            final var maybeProvider = ServiceLoader.load(ImmediateWindowProvider.class)
+            final Optional<ImmediateWindowProvider> maybeProvider = Optional.of(new DisplayWindow()); /*ServiceLoader.load(ImmediateWindowProvider.class)
                     .stream()
                     .map(ServiceLoader.Provider::get)
                     .filter(p -> Objects.equals(p.name(), providername))
-                    .findFirst();
+                    .findFirst();*/
             provider = maybeProvider.or(() -> {
                 LOGGER.info("Failed to find ImmediateWindowProvider {}, disabling", providername);
                 return Optional.of(new DummyProvider());
             }).orElseThrow();
-            //provider = new DisplayWindow();
         }
         // Only update config if the provider isn't the dummy provider
         if (!Objects.equals(provider.name(), "dummyprovider"))
-            updateConfig(EARLY_WINDOW_PROVIDER, provider.name());
+            FMLConfig.updateConfig(FMLConfig.ConfigValue.EARLY_WINDOW_PROVIDER, provider.name());
         Loader.progressWindowTick = provider.initialize(arguments);
         earlyProgress = StartupNotificationManager.addProgressBar("EARLY", 0);
         earlyProgress.label("Bootstrapping Minecraft");
-    }
-
-    private static void updateConfig(Object object, Object object2) {
-
     }
 
     public static long setupMinecraftWindow(final IntSupplier width, final IntSupplier height, final Supplier<String> title, final LongSupplier monitor) {
@@ -153,17 +145,16 @@ public class ImmediateWindowHandler {
 
         @Override
         public void updateModuleReads(final ModuleLayer layer) {
-            Class<?> clz = null;
-            try {
-                clz = Class.forName("net.minecraftforge.client.loading.NoVizFallback");
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+            var fm = layer.findModule("neoforge");
+            if (fm.isPresent()) {
+                getClass().getModule().addReads(fm.get());
+                var clz = fm.map(l -> Class.forName(l, "net.neoforged.neoforge.client.loading.NoVizFallback")).orElseThrow();
+                var methods = Arrays.stream(clz.getMethods()).filter(m -> Modifier.isStatic(m.getModifiers())).collect(Collectors.toMap(Method::getName, Function.identity()));
+                NV_HANDOFF = methods.get("windowHandoff");
+                NV_OVERLAY = methods.get("loadingOverlay");
+                NV_POSITION = methods.get("windowPositioning");
+                NV_VERSION = methods.get("glVersion");
             }
-            var methods = Arrays.stream(clz.getMethods()).filter(m -> Modifier.isStatic(m.getModifiers())).collect(Collectors.toMap(Method::getName, Function.identity()));
-            NV_HANDOFF = methods.get("windowHandoff");
-            NV_OVERLAY = methods.get("loadingOverlay");
-            NV_POSITION = methods.get("windowPositioning");
-            NV_VERSION = methods.get("glVersion");
         }
 
         @Override

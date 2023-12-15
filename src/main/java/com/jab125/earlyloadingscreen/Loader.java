@@ -1,7 +1,7 @@
 package com.jab125.earlyloadingscreen;
 
 //import net.fabricmc.devlaunchinjector.Main;
-import net.minecraftforge.fml.loading.ImmediateWindowHandler;
+import net.neoforged.fml.loading.ImmediateWindowHandler;
 
 public class Loader {
     public static Runnable progressWindowTick;

@@ -1,6 +1,5 @@
 package com.jab125.earlyloadingscreen;
 
-import de.keksuccino.drippyloadingscreen.DrippyLoadingScreen;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.client.gui.screen.SplashOverlay;

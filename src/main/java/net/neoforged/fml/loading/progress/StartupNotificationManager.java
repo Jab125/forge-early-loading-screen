@@ -3,15 +3,13 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading.progress;
+package net.neoforged.fml.loading.progress;
 
 import com.google.common.base.Ascii;
 import com.google.common.base.CharMatcher;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class StartupNotificationManager {
     private static volatile EnumMap<Message.MessageType, List<Message>> messages = new EnumMap<>(Message.MessageType.class);
@@ -51,7 +49,7 @@ public class StartupNotificationManager {
         return messages.values().stream().flatMap(Collection::stream)
                 .sorted(Comparator.comparingLong(Message::timestamp).thenComparing(Message::getText).reversed())
                 .map(m -> new AgeMessage((int) ((ts - m.timestamp()) / 1000000), m))
-                .limit(5/*2*/)
+                .limit(2)
                 .toList();
     }
 

@@ -3,8 +3,6 @@ package com.jab125.earlyloadingscreen.mixin;
 import com.jab125.earlyloadingscreen.util.HooksSetup;
 import net.minecraft.Bootstrap;
 import net.minecraft.client.main.Main;
-import net.minecraftforge.fml.loading.ImmediateWindowHandler;
-import net.minecraftforge.fml.loading.progress.ProgressMeter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,9 +22,9 @@ public class MainMixin {
         //ImmediateWindowHandler.acceptGameLayer(null);
     }
 
-    @Inject(method = "main", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/telemetry/GameLoadTimeEvent;setBootstrapTime(J)V", shift = At.Shift.AFTER))
+    @Inject(method = "main", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/session/telemetry/GameLoadTimeEvent;setBootstrapTime(J)V", shift = At.Shift.AFTER))
     private static void inject2(String[] args, CallbackInfo ci) {
-        net.minecraftforge.fml.loading.BackgroundWaiter.runAndTick(Bootstrap::initialize/*Bootstrap.initialize()*/, progressWindowTick);
+        net.neoforged.fml.loading.BackgroundWaiter.runAndTick(Bootstrap::initialize/*Bootstrap.initialize()*/, progressWindowTick);
     }
 
     @Redirect(method = "main", at = @At(value = "INVOKE", target = "Lnet/minecraft/Bootstrap;initialize()V"))

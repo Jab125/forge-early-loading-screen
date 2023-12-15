@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.fml.loading.progress;
+package net.neoforged.fml.loading.progress;
 
 public class Message {
     private final String text;
