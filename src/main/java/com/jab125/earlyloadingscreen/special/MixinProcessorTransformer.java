@@ -4,21 +4,20 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import springboard.tweak.classloader.ClassTransformer;
 
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class MixinProcessorTransformer implements ClassTransformer {
-    @Override
-    public boolean shouldTransform(String name) {
-        return "org.spongepowered.asm.mixin.transformer.MixinProcessor".equals(name);
-    }
+public class MixinProcessorTransformer implements ClassFileTransformer {
 
     @Override
-    public byte[] transformClass(String className, byte[] in) { // selectConfigs
-        ClassReader classReader = new ClassReader(in);
+    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (!className.equals("org/spongepowered/asm/mixin/transformer/MixinProcessor")) return null;
+        ClassReader classReader = new ClassReader(classfileBuffer);
         ClassNode node = new ClassNode(Opcodes.ASM9);
         classReader.accept(node, ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
 

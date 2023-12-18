@@ -12,7 +12,6 @@ import java.util.Set;
 public class HooksMixinInit implements IMixinConfigPlugin {
 
     public void run() {
-        if (!"true".equals(System.getProperty("springboard"))) return;
         HooksSetup.init(FabricLoader.getInstance().getLaunchArguments(true));
     }
 

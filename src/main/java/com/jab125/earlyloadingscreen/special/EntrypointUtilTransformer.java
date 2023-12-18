@@ -1,28 +1,23 @@
 package com.jab125.earlyloadingscreen.special;
 
-import net.fabricmc.loader.impl.FabricLoaderImpl;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import springboard.tweak.classloader.ClassTransformer;
-
 import java.io.IOException;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class EntrypointUtilTransformer implements ClassTransformer {
+public class EntrypointUtilTransformer implements ClassFileTransformer {
     @Override
-    public boolean shouldTransform(String name) {
-       // System.out.println(name);
-        return "net.fabricmc.loader.impl.FabricLoaderImpl".equals(name);
-    }
-
-    @Override
-    public byte[] transformClass(String className, byte[] in) {
-        ClassReader classReader = new ClassReader(in);
+    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+        if (!className.equals("net/fabricmc/loader/impl/FabricLoaderImpl")) return null;
+        ClassReader classReader = new ClassReader(classfileBuffer);
         ClassNode node = new ClassNode(Opcodes.ASM9);
         classReader.accept(node, ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
 
