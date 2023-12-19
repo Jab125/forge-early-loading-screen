@@ -61,7 +61,7 @@ public class NeoForgeLoadingOverlay extends SplashOverlay {
 
     @Override
     public void render(final @NotNull DrawContext graphics, final int mouseX, final int mouseY, final float partialTick) {
-        long millis = Util.getEpochTimeMs();
+        long millis = Util.getMeasuringTimeMs();
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
         progress.setAbsolute(MathHelper.clamp((int) (this.reload.getProgress() * 100f), 0, 100));
         var fade = 1.0F - MathHelper.clamp(fadeouttimer - 1.0F, 0.0F, 1.0F);
