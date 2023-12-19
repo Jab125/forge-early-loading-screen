@@ -20,7 +20,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return !mixinClassName.contains("compat");
+        return true;//!mixinClassName.contains("compat");
     }
 
     @Override

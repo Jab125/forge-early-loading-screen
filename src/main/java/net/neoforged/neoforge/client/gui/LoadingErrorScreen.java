@@ -57,7 +57,7 @@ public class LoadingErrorScreen extends FatalErrorScreen {
         super.init();
         this.clearChildren();
 
-        this.errorHeader = Text.literal(Formatting.RED + I18n.translate("fml.loadingerrorscreen.errorheader", this.modLoadErrors.size()) + Formatting.RESET);
+        this.errorHeader = Text.literal(Formatting.RED + I18n.translate("fml.loadingerrorscreen.errorheader" + (this.modLoadErrors.size() == 1 ? ".singular" : ".plural"), this.modLoadErrors.size()) + Formatting.RESET);
         this.warningHeader = Text.literal(Formatting.YELLOW + I18n.translate("fml.loadingerrorscreen.warningheader", this.modLoadErrors.size()) + Formatting.RESET);
 
         int yOffset = 46;
@@ -95,12 +95,12 @@ public class LoadingErrorScreen extends FatalErrorScreen {
         LoadingEntryList(final LoadingErrorScreen parent, final Map<ModContainer, List<Throwable>> errors, final List<?> warnings) {
             super(Objects.requireNonNull(parent.client), parent.width, parent.height - 50, 35,
                     Math.max(
-                            errors.entrySet().stream().mapToInt(error -> parent.textRenderer.wrapLines(Text.literal("%s (%s) has failed to load correctly\n\u00a77%s".formatted(error.getKey().getMetadata().getName(), error.getKey().getMetadata().getId(), error.getValue().get(0).getMessage() != null ? error.getValue().get(0).getMessage() : "")), parent.width - 20).size()).max().orElse(0),
+                            errors.entrySet().stream().mapToInt(error -> parent.textRenderer.wrapLines(Text.translatable("fml.modloading.failedtoloadmod", error.getKey().getMetadata().getName(), error.getKey().getMetadata().getId(), Text.literal(error.getValue().get(0).toString()).formatted(Formatting.GRAY)), parent.width - 20).size()).max().orElse(0),
                             0));//warnings.stream().mapToInt(warning -> parent.textRenderer.wrapLines(Text.literal(warning.formatToString() != null ? warning.formatToString() : ""), parent.width - 20).size()).max().orElse(0)) * parent.minecraft.font.lineHeight + 8);
             boolean both = !errors.isEmpty() && !warnings.isEmpty();
             if (both)
                 addEntry(new LoadingMessageEntry(parent.errorHeader, true));
-            errors.entrySet().forEach(e -> e.getValue().forEach(d -> addEntry(new LoadingMessageEntry(Text.literal("%s (%s) has failed to load correctly\n\u00a77%s".formatted(e.getKey().getMetadata().getName(), e.getKey().getMetadata().getId(), d.getMessage() != null ? d.getMessage() : ""))))));
+            errors.entrySet().forEach(e -> e.getValue().forEach(d -> addEntry(new LoadingMessageEntry(Text.translatable("fml.modloading.failedtoloadmod", e.getKey().getMetadata().getName(), e.getKey().getMetadata().getId(), Text.literal(d.toString()).formatted(Formatting.GRAY))))));
             if (both) {
                 int maxChars = (this.width - 10) / parent.client.textRenderer.getWidth("-");
                 addEntry(new LoadingMessageEntry(Text.literal("\n" + Strings.repeat("-", maxChars) + "\n")));

@@ -60,12 +60,23 @@ public class EntrypointUtilTransformer implements ClassFileTransformer {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-            AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 3).findFirst().orElseThrow();
-            InsnList list = new InsnList();
-            list.add(new VarInsnNode(ALOAD, 5));
-            list.add(new VarInsnNode(ALOAD, 7));
-            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
-            methodNode.instructions.insert(r, list);
+            {
+                AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 3).findFirst().orElseThrow();
+                InsnList list = new InsnList();
+                list.add(new VarInsnNode(ALOAD, 5));
+                list.add(new VarInsnNode(ALOAD, 7));
+                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
+                methodNode.instructions.insert(r, list);
+            }
+            {
+                InsnList list = new InsnList();
+                LabelNode label = new LabelNode();
+                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "entrypointsDisabled", "()Z"));
+                list.add(new JumpInsnNode(Opcodes.IFEQ, label));
+                list.add(new InsnNode(RETURN));
+                list.add(label);
+                methodNode.instructions.insert(list);
+            }
         }
 
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);

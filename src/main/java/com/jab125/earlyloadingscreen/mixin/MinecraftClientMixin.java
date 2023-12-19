@@ -3,6 +3,7 @@ package com.jab125.earlyloadingscreen.mixin;
 import com.jab125.earlyloadingscreen.needed.Hooks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Overlay;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.resource.ResourceReloadLogger;
 import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashReport;
 import net.neoforged.fml.loading.ImmediateWindowHandler;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,7 @@ public abstract class MinecraftClientMixin {
 
     @Shadow public abstract void setScreen(@Nullable Screen screen);
 
+
     @ModifyVariable(method = "<init>", at = @At("STORE"))
     private MinecraftClient.LoadingContext captureVar(MinecraftClient.LoadingContext context) {
         return this.context = context;
@@ -64,9 +68,27 @@ public abstract class MinecraftClientMixin {
     @Inject(method = "onInitFinished", at = @At("RETURN"), cancellable = true)
     private void onInitFinished(MinecraftClient.LoadingContext loadingContext, CallbackInfoReturnable<Runnable> cir) {
         if (FabricLoader.getInstance().getObjectShare().get("dd:fjkdj") instanceof Map t) {
-            this.setScreen(new LoadingErrorScreen(t, List.of(), Path.of(".").toFile()));
+            CrashReport crashReport = CrashReport.create(new Exception("Error during mod loading"), "Error during mod loading");
+            printCrashReport0((MinecraftClient) (Object)this, FabricLoader.getInstance().getGameDir().toFile(), crashReport);
+            this.setScreen(new LoadingErrorScreen(t, List.of(), crashReport.getFile()));
             cir.setReturnValue(() -> {});
         }
+    }
+
+    @Unique
+    private static void printCrashReport0(@Nullable MinecraftClient client, File runDirectory, CrashReport crashReport) {
+        File file = new File(runDirectory, "crash-reports");
+        File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
+        Bootstrap.println(crashReport.asString());
+
+        if (crashReport.getFile() != null) {
+            Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile());
+        } else if (crashReport.writeToFile(file2)) {
+            Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + file2.getAbsolutePath());
+        } else {
+            Bootstrap.println("#@?@# Game crashed! Crash report could not be saved. #@?@#");
+        }
+
     }
 
     private void accept(Optional<Throwable> error) {

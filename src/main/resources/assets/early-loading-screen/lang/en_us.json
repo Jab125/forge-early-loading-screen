@@ -1,3 +1,7 @@
 {
-  "fml.modloading.failedtoloadmod":"%s (%s) has failed to load correctly\n\u00a7%s"
+  "fml.modloading.failedtoloadmod":"%s (%s) has failed to load correctly\n%s",
+  "fml.button.open.mods.folder": "Open Mods Folder",
+  "fml.button.open.file": "Open %s",
+  "fml.loadingerrorscreen.errorheader.singular": "Error loading mods\n%s error has occurred during loading",
+  "fml.loadingerrorscreen.errorheader.plural": "Error loading mods\n%s errors have occurred during loading"
 }

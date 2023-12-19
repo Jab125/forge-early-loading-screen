@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ExampleMixin",
-    "SplashOverlayAccessor"
+    "SplashOverlayAccessor",
+    "compat.fabricevents.ArrayBackedEventMixin",
+    "compat.fabricevents.EventMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -13,6 +15,7 @@
   "client": [
     "MainMixin",
     "MinecraftClientMixin",
-    "WindowMixin"
+    "WindowMixin",
+    "compat.fabrickeybinds.KeybindingRegistryImplMixin"
   ]
 }

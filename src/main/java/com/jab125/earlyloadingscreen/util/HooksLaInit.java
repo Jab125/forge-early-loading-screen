@@ -1,6 +1,7 @@
 package com.jab125.earlyloadingscreen.util;
 
 import com.jab125.earlyloadingscreen.special.EntrypointUtilTransformer;
+import com.jab125.earlyloadingscreen.special.MixinInfoTransformer;
 import com.jab125.earlyloadingscreen.special.MixinProcessorTransformer;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.fabricmc.loader.api.LanguageAdapter;
@@ -57,6 +58,7 @@ public class HooksLaInit implements LanguageAdapter {
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+        ByteBuddyAgent.getInstrumentation().addTransformer(new MixinInfoTransformer(), true);
         ByteBuddyAgent.getInstrumentation().addTransformer(new MixinProcessorTransformer(), true);
         ByteBuddyAgent.getInstrumentation().addTransformer(new EntrypointUtilTransformer(), true);
         try {

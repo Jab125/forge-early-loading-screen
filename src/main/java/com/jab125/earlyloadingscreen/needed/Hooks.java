@@ -98,6 +98,23 @@ public class Hooks {
         map.clear();
         System.out.println(map);
     }
+    private static final Random random = new Random();
+
+    public static boolean disableMixin(boolean respectPlugin, String className, String mixinName) {
+        if (mixinName.startsWith("net.fabricmc.")) return false;
+        if (mixinName.startsWith("com.jab125.earlyloadingscreen.mixin.")) return false;
+        if (mixinName.equals("net.fabricmc.fabric.mixin.crash.report.info.SystemDetailsMixin")) {
+            return false;
+        }
+        if (mixinName.startsWith("net.fabricmc.fabric.mixin.resource.loader.")) {
+            return false;
+        }
+        return !errors.isEmpty();
+    }
+
+    public static boolean entrypointsDisabled() {
+        return !errors.isEmpty();
+    }
 
     public static class MeterDelegate {
 
