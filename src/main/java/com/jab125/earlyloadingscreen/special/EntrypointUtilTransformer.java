@@ -13,6 +13,8 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static org.objectweb.asm.Opcodes.*;
+
 public class EntrypointUtilTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -27,7 +29,7 @@ public class EntrypointUtilTransformer implements ClassFileTransformer {
 
             {
                 InsnList list = new InsnList();
-                list.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                list.add(new VarInsnNode(ALOAD, 1));
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "entrypoint", "(Ljava/lang/String;)V"));
                 methodNode.instructions.insert(list);
             }
@@ -35,15 +37,33 @@ public class EntrypointUtilTransformer implements ClassFileTransformer {
             {
                 AbstractInsnNode rip = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode node1 && node1.var == 5).findFirst().orElseThrow();
                 InsnList list = new InsnList();
-                list.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                list.add(new VarInsnNode(Opcodes.ALOAD, 5));
+                list.add(new VarInsnNode(ALOAD, 1));
+                list.add(new VarInsnNode(ALOAD, 5));
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "setup", "(Ljava/lang/String;Ljava/util/Collection;)V"));
                 methodNode.instructions.insert(rip, list);
             }
+            try {
+                AbstractInsnNode aload8 = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 8 && n.getOpcode() == ALOAD).findFirst().orElseThrow();
+                methodNode.instructions.insertBefore(aload8, new VarInsnNode(ALOAD, 7));
+                methodNode.instructions.insertBefore(aload8, new VarInsnNode(ALOAD, 8));
+                methodNode.instructions.insertBefore(aload8, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "modLoadingError", "(Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;Ljava/lang/Throwable;)V"));
+                methodNode.instructions.insertBefore(aload8, new InsnNode(RETURN));
+                int i = methodNode.instructions.indexOf(aload8);
+                AbstractInsnNode astore4 = Arrays.stream(methodNode.instructions.toArray()).filter(a -> methodNode.instructions.indexOf(a) > i && a instanceof VarInsnNode n && n.var == 4 && n.getOpcode() == ASTORE).findFirst().orElseThrow();
+                System.out.println("Try remove");
+                while (methodNode.instructions.get(i) != astore4) {
+                    System.out.println("Removed " + methodNode.instructions.get(i));
+                    methodNode.instructions.remove(methodNode.instructions.get(i));
+                }
+                System.out.println("Removed " + methodNode.instructions.get(i));
+                methodNode.instructions.remove(methodNode.instructions.get(i));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
             AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 3).findFirst().orElseThrow();
             InsnList list = new InsnList();
-            list.add(new VarInsnNode(Opcodes.ALOAD, 5));
-            list.add(new VarInsnNode(Opcodes.ALOAD, 7));
+            list.add(new VarInsnNode(ALOAD, 5));
+            list.add(new VarInsnNode(ALOAD, 7));
             list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
             methodNode.instructions.insert(r, list);
         }
