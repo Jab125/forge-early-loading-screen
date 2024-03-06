@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.jab125.earlyloadingscreen.mixin.compat.mc12001",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.jab125.earlyloadingscreen.mc.Plugin",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MinecraftClientMixin"
+  ]
+}
