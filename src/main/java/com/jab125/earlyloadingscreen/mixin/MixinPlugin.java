@@ -1,5 +1,8 @@
 package com.jab125.earlyloadingscreen.mixin;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,7 +23,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return !mixinClassName.contains("compat");
+        try {
+            return !mixinClassName.contains("MinecraftClientMixin") || FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().compareTo(Version.parse("1.20.1")) > 0;
+        } catch (VersionParsingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
