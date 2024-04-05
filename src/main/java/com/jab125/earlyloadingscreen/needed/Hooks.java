@@ -14,6 +14,7 @@ public class Hooks {
     public static Consumer<String> stringConsumer = s -> {};
     public static BiConsumer<String, MeterDelegate> onCreate = (s, b) -> {};
     public static BiConsumer<MeterDelegate, String> stringBiConsumer = (s, b) -> {};
+    public static BiConsumer<MeterDelegate, String> stringBiConsumer2 = (s, b) -> {};
     private static final HashMap<Collection<EntrypointContainer<?>>, MeterDelegate> map = new HashMap<>();
     private static boolean hookSetup;
     public static void entrypoint(String s) {
@@ -73,6 +74,21 @@ public class Hooks {
        // meterDelegate.update(container.getProvider().getMetadata().getName());
     }
 
+    public static void ran2(Collection<EntrypointContainer<?>> entrypointContainers, EntrypointContainer<?> container) {
+        setupHooks();
+        MeterDelegate meterDelegate = map.get(entrypointContainers);
+        try {
+            Object getProvider = container.getClass().getMethod("getProvider").invoke(container);
+            Object getMetadata = getProvider.getClass().getMethod("getMetadata").invoke(getProvider);
+            Method getName = getMetadata.getClass().getDeclaredMethod("getName");
+            getName.setAccessible(true);
+            meterDelegate.finished((String) getName.invoke(getMetadata));
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        // meterDelegate.update(container.getProvider().getMetadata().getName());
+    }
+
     public static class MeterDelegate {
 
         public final int size;
@@ -83,6 +99,12 @@ public class Hooks {
         public void update(String modName) {
             if (stringBiConsumer != null) {
                 stringBiConsumer.accept(this, modName);
+            }
+        }
+
+        public void finished(String modName) {
+            if (stringBiConsumer2 != null) {
+                stringBiConsumer2.accept(this, modName);
             }
         }
     }

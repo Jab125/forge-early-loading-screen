@@ -37,6 +37,7 @@ public class HooksSetup {
         stringConsumer.set(null, f);
         Field onCreate = aClass.getField("onCreate");
         Field stringBiConsumer = aClass.getField("stringBiConsumer");
+        Field stringBiConsumer2 = aClass.getField("stringBiConsumer2");
         BiConsumer<String, Object> k = (s, meterDelegate) -> {
             int size;
             try {
@@ -50,10 +51,14 @@ public class HooksSetup {
         BiConsumer<Object, String> h = (o, s) -> {
             meterManagement.get(o).label(meterManagement.get(o).originalName + ": " + s);
             meterManagement.get(o).increment();
+        };
+        stringBiConsumer.set(null, h);
+
+        BiConsumer<Object, String> j = (o, s) -> {
             if (meterManagement.get(o).current() == meterManagement.get(o).steps())
                 meterManagement.get(o).complete();
         };
-        stringBiConsumer.set(null, h);
+        stringBiConsumer2.set(null, j);
 
         if (HooksLaInit.failed) {
             f.accept("Failed to patch hooks. Less information will be shown.");

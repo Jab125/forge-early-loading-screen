@@ -40,12 +40,22 @@ public class EntrypointUtilTransformer implements ClassFileTransformer {
                 list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "setup", "(Ljava/lang/String;Ljava/util/Collection;)V"));
                 methodNode.instructions.insert(rip, list);
             }
-            AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 3).findFirst().orElseThrow();
-            InsnList list = new InsnList();
-            list.add(new VarInsnNode(Opcodes.ALOAD, 5));
-            list.add(new VarInsnNode(Opcodes.ALOAD, 7));
-            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
-            methodNode.instructions.insert(r, list);
+            {
+                AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof VarInsnNode n && n.var == 3).findFirst().orElseThrow();
+                InsnList list = new InsnList();
+                list.add(new VarInsnNode(Opcodes.ALOAD, 5));
+                list.add(new VarInsnNode(Opcodes.ALOAD, 7));
+                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
+                methodNode.instructions.insert(r, list);
+            }
+            { //     INVOKEINTERFACE java/util/function/Consumer.accept (Ljava/lang/Object;)V (itf)
+                AbstractInsnNode r = Arrays.stream(methodNode.instructions.toArray()).filter(a -> a instanceof MethodInsnNode n && "accept".equals(n.name) && "java/util/function/Consumer".equals(n.owner)).findFirst().orElseThrow();
+                InsnList list = new InsnList();
+                list.add(new VarInsnNode(Opcodes.ALOAD, 5));
+                list.add(new VarInsnNode(Opcodes.ALOAD, 7));
+                list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/jab125/earlyloadingscreen/needed/Hooks", "ran2", "(Ljava/util/Collection;Lnet/fabricmc/loader/api/entrypoint/EntrypointContainer;)V"));
+                methodNode.instructions.insert(r, list);
+            }
         }
 
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
