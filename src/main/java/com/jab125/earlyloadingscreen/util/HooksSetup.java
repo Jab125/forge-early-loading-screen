@@ -55,5 +55,8 @@ public class HooksSetup {
         };
         stringBiConsumer.set(null, h);
 
+        if (HooksLaInit.failed) {
+            f.accept("Failed to patch hooks. Less information will be shown.");
+        }
     }
 }
