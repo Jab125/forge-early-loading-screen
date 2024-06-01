@@ -2,7 +2,6 @@ package com.jab125.earlyloadingscreen;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.minecraft.client.gui.screen.SplashOverlay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

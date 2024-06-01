@@ -1,10 +1,7 @@
 package com.jab125.earlyloadingscreen.mixin;
 
-import net.minecraft.client.WindowEventHandler;
-import net.minecraft.client.WindowSettings;
-import net.minecraft.client.util.Monitor;
-import net.minecraft.client.util.MonitorTracker;
-import net.minecraft.client.util.Window;
+import com.mojang.blaze3d.platform.Monitor;
+import com.mojang.blaze3d.platform.Window;
 import net.neoforged.fml.loading.ImmediateWindowHandler;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +20,7 @@ public abstract class WindowMixin {
 
     private Monitor monitor;
 
-    @Shadow @Nullable public abstract Monitor getMonitor();
+    @Shadow @Nullable public abstract Monitor findBestMonitor();
 
     @Shadow private int width;
 
@@ -43,7 +40,7 @@ public abstract class WindowMixin {
 
     @Shadow private int framebufferHeight;
 
-    @Shadow protected abstract void updateFramebufferSize();
+    @Shadow protected abstract void refreshFramebufferSize();
 
     @Shadow private int framebufferWidth;
 
@@ -69,7 +66,7 @@ public abstract class WindowMixin {
         // return 0;
     }
 
-    @Inject(method = "updateFramebufferSize", at = @At(value = "TAIL"))
+    @Inject(method = "refreshFramebufferSize", at = @At(value = "TAIL"))
     void updateFramebufferSize(CallbackInfo ci) {
         if (this.framebufferHeight == 0 || this.framebufferWidth == 0) ImmediateWindowHandler.updateFBSize(width -> this.framebufferWidth = width, height -> this.framebufferHeight = height);
     }

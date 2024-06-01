@@ -7,8 +7,8 @@ package net.neoforged.fml.earlydisplay;
 
 import joptsimple.OptionParser;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.ResourceReload;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.packs.resources.ReloadInstance;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.ImmediateWindowHandler;
 import net.neoforged.fml.loading.ImmediateWindowProvider;
@@ -581,7 +581,7 @@ public class DisplayWindow implements ImmediateWindowProvider {
     @Override
     public <T> Supplier<T> loadingOverlay(final Supplier<?> mc, final Supplier<?> ri, final Consumer<Optional<Throwable>> ex, final boolean fade) {
         if (FabricLoader.getInstance().isModLoaded("drippyloadingscreen")) {
-            return (Supplier<T>) NoVizFallback.loadingOverlay((Supplier<MinecraftClient>) mc, (Supplier<ResourceReload>) ri, ex, fade);
+            return (Supplier<T>) NoVizFallback.loadingOverlay((Supplier<Minecraft>) mc, (Supplier<ReloadInstance>) ri, ex, fade);
         }
         try {
             return (Supplier<T>)loadingOverlay.invoke(null, mc, ri, ex, this);

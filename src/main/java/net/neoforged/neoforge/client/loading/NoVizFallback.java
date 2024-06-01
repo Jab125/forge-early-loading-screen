@@ -5,16 +5,16 @@
 
 package net.neoforged.neoforge.client.loading;
 
-import net.minecraft.client.util.Monitor;
+import com.mojang.blaze3d.platform.Monitor;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.resource.ResourceReload;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LoadingOverlay;
+import net.minecraft.server.packs.resources.ReloadInstance;
 import org.lwjgl.glfw.GLFW;
 
 public final class NoVizFallback {
@@ -24,8 +24,8 @@ public final class NoVizFallback {
         return () -> WINDOW = GLFW.glfwCreateWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
     }
 
-    public static Supplier<SplashOverlay> loadingOverlay(Supplier<MinecraftClient> mc, Supplier<ResourceReload> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
-        return () -> new SplashOverlay(mc.get(), ri.get(), ex, fadein);
+    public static Supplier<LoadingOverlay> loadingOverlay(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
+        return () -> new LoadingOverlay(mc.get(), ri.get(), ex, fadein);
     }
 
     public static Boolean windowPositioning(Optional<Monitor> monitor, IntConsumer widthSetter, IntConsumer heightSetter, IntConsumer xSetter, IntConsumer ySetter) {

@@ -1,2 +1,2 @@
 accessWidener v2 named
-accessible class net/minecraft/client/MinecraftClient$LoadingContext
+accessible class net/minecraft/client/Minecraft$GameLoadCookie
