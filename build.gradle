@@ -43,6 +43,11 @@ repositories {
 }
 
 sourceSets {
+	main {
+		java {
+			srcDirs += ["src/main/core", "src/main/neoforge", "src/main/loader", "src/main/earlydisplay"]
+		}
+	}
 	testmod {
 		compileClasspath += main.compileClasspath
 		runtimeClasspath += main.runtimeClasspath
