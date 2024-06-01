@@ -60,11 +60,6 @@ public class EntrypointUtilTransformer implements ClassFileTransformer {
 
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
         node.accept(classWriter);
-        try {
-            Files.write(Path.of("FabricLoaderImpl.class"), classWriter.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return classWriter.toByteArray();
     }
 }
