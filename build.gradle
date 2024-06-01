@@ -103,13 +103,6 @@ dependencies {
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
-	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
-//	modImplementation include("com.jab125:springboard:0.2.18"), {
-//		exclude(group: "net.fabricmc.fabric-api")
-//		exclude(group: "net.fabricmc")
-//	}
-	//compileOnly "net.fabricmc:dev-launch-injector:0.2.1+build.8"
-
 	def compatibility = [ // TODO add to Modpack-Update-Checker/meta-helper.json
 //			             "curse.maven:drippy-loading-screen-fabric-515172:4590529",
 //						 "curse.maven:konkrete-fabric-416797:4581979",
