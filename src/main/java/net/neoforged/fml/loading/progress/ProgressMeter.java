@@ -48,7 +48,7 @@ public final class ProgressMeter {
     }
 
     public float progress() {
-        return current.get()/(float)steps;
+        return current.get() / (float) steps;
     }
 
     public void setAbsolute(final int absolute) {
