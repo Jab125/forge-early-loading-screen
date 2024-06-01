@@ -1,7 +1,8 @@
 package com.jab125.earlyloadingscreen.util;
 
-import com.jab125.earlyloadingscreen.special.EntrypointUtilTransformer;
+import com.jab125.earlyloadingscreen.special.FabricLoaderImplTransformer;
 import com.jab125.earlyloadingscreen.special.MixinProcessorTransformer;
+import com.jab125.earlyloadingscreen.special.MixinsTransformer;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.LanguageAdapterException;
@@ -9,14 +10,10 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.launch.knot.Knot;
 import net.minecraftforge.unsafe.UnsafeHacks;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 
-import java.io.File;
 import java.io.InputStream;
-import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.UnmodifiableClassException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 
 public class HooksLaInit implements LanguageAdapter {
     public static boolean failed = false;
@@ -61,7 +58,7 @@ public class HooksLaInit implements LanguageAdapter {
                 throw new RuntimeException(t);
             }
             ByteBuddyAgent.getInstrumentation().addTransformer(new MixinProcessorTransformer(), true);
-            ByteBuddyAgent.getInstrumentation().addTransformer(new EntrypointUtilTransformer(), true);
+            ByteBuddyAgent.getInstrumentation().addTransformer(new FabricLoaderImplTransformer(), true);
             try {
                 ByteBuddyAgent.getInstrumentation().retransformClasses(FabricLoaderImpl.class);
             } catch (UnmodifiableClassException e) {
