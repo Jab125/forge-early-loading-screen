@@ -13,17 +13,14 @@
 		"MinecraftForge Team"
 	],
 	"contact": {
+		"homepage": "https://modrinth.com/mod/forge-early-loading-screen-fabric",
+		"sources": "https://github.com/Jab125/forge-early-loading-screen",
+		"issues": "https://github.com/Jab125/forge-early-loading-screen/issues"
 	},
 	"license": "LGPL-2.1-only",
 	"icon": "assets/early-loading-screen/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"com.jab125.earlyloadingscreen.ExampleMod"
-		],
-		"preLaunch": [
-			"com.jab125.earlyloadingscreen.test.Test"
-		],
 		"early-loading-screen-hook-provider": ["com.jab125.earlyloadingscreen.util.Provider"]
 	},
 	"mixins": [
@@ -49,11 +46,18 @@
 		]
 	},
 	"breaks": {
-		"quilt_loader": "*"
+		"quilt_loader": "*",
+		"springboard": "*"
 	},
 	"custom": {
 		"sodium:options": {
 			"mixin.workarounds.context_creation": false
+		},
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/s2AtrCEKCn",
+				"modmenu.kofi": "https://ko-fi.com/Jab125/"
+			}
 		}
 	}
 }
