@@ -2,7 +2,6 @@ package com.jab125.earlyloadingscreen.util;
 
 import com.jab125.earlyloadingscreen.special.FabricLoaderImplTransformer;
 import com.jab125.earlyloadingscreen.special.MixinProcessorTransformer;
-import com.jab125.earlyloadingscreen.special.MixinsTransformer;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.LanguageAdapterException;
