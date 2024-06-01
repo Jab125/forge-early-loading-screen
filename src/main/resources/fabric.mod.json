@@ -48,6 +48,9 @@
 			"~1.21"
 		]
 	},
+	"breaks": {
+		"quilt_loader": "*"
+	},
 	"custom": {
 		"sodium:options": {
 			"mixin.workarounds.context_creation": false
