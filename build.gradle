@@ -57,6 +57,9 @@ dependencies {
 }
 
 loom {
+	mixin {
+		useLegacyMixinAp = false
+	}
 	mods {
 		m {
 			sourceSet sourceSets.main
