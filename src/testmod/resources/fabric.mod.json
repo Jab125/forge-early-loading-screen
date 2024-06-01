@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "early-loading-screen-test",
+	"version": "${version}",
+	"name": "Forge Early Loading Screen Test",
+	"description": "Tests for the Loading Screen",
+	"authors": [
+		"Jab125"
+	],
+	"contact": {
+	},
+	"license": "LGPL-2.1-only",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"dev.jab125.earlyloadingscreen.test.ExampleMod"
+		],
+		"preLaunch": [
+			"dev.jab125.earlyloadingscreen.test.Test"
+		]
+	},
+	"depends": {
+		"early-loading-screen": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/s2AtrCEKCn",
+				"modmenu.kofi": "https://ko-fi.com/Jab125/"
+			}
+		}
+	}
+}
