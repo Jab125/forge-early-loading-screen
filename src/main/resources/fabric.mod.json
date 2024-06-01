@@ -36,14 +36,19 @@
 	},
 	"depends": {
 		"fabricloader": ">=0.15.1",
-		"minecraft": "~1.20.1",
+		"minecraft": [
+			"~1.20.1",
+			"~1.21"
+		],
 		"java": ">=17"
 	},
 	"recommends": {
-		"minecraft": "~1.20.3"
+		"minecraft": [
+			"~1.20.3",
+			"~1.21"
+		]
 	},
 	"custom": {
-		"springboard:mod-suggestor": "com.jab125.earlyloadingscreen.special.Suggestor",
 		"sodium:options": {
 			"mixin.workarounds.context_creation": false
 		}
