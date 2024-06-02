@@ -26,8 +26,8 @@ Classes are patched using Byte Buddy Agent and some classes are forcibly loaded 
 | 0.3.1 | 20.4.27-beta           | 2.0.1                  |
 | 0.4.0 | 20.4.48-beta           | 2.0.1                  |
 | 0.5.0 | 20.4.48-beta           | 2.0.1                  |
-| 0.6.0 | 20.6.99-beta           | 3.0.9                  |
-| 0.6.1 | 20.6.99-beta           | 3.0.9                  |
+| 0.6.0 | 20.6.99-beta           | 3.0.41                 |
+| 0.6.1 | 20.6.99-beta           | 3.0.41                 |
 ## Licensing
 The entire mod is licensed under LGPL-2.1-only
 
