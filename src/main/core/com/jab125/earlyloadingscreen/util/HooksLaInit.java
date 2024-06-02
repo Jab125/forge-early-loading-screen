@@ -67,5 +67,6 @@ public class HooksLaInit implements LanguageAdapter {
             failed = true;
             t.printStackTrace();
         }
+        System.out.println("ELS: " + (failed ? "Failed to setup hooks" : "Successfully setup hooks"));
     }
 }
