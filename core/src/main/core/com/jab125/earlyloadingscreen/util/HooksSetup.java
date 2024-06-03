@@ -1,6 +1,5 @@
 package com.jab125.earlyloadingscreen.util;
 
-import com.jab125.earlyloadingscreen.mixin.MainMixin;
 import com.jab125.earlyloadingscreen.needed.Hooks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.neoforged.fml.StartupMessageManager;

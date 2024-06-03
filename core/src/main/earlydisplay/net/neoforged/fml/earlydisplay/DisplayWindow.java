@@ -45,6 +45,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import joptsimple.OptionParser;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.neoforged.fml.loading.FMLConfig;
@@ -606,8 +608,8 @@ public class DisplayWindow implements ImmediateWindowProvider {
     public void updateModuleReads(final ModuleLayer layer) {
         Class<?> clz = null;
         try {
-            clz = Class.forName("net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay");
-        } catch (ClassNotFoundException e) {
+            clz = Class.forName((FabricLoader.getInstance().isModLoaded("early-loading-screen-12100") && FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().compareTo(Version.parse("1.21-alpha.24.21.a")) >= 0) ? "com.jab125.earlyloadingscreen.mc12100.NeoForgeLoadingOverlay" : "net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay");
+        } catch (ClassNotFoundException | VersionParsingException e) {
             throw new RuntimeException(e);
         }
         var methods = Arrays.stream(clz.getMethods()).filter(m-> Modifier.isStatic(m.getModifiers())).collect(Collectors.toMap(Method::getName, Function.identity()));
