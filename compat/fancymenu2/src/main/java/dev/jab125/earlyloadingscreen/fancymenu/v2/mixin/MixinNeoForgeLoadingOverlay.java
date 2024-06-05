@@ -1,0 +1,76 @@
+package dev.jab125.earlyloadingscreen.fancymenu.v2.mixin;
+
+import de.keksuccino.fancymenu.events.RenderScreenEvent;
+import de.keksuccino.fancymenu.events.ScreenBackgroundRenderedEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import de.keksuccino.fancymenu.FancyMenu;
+import de.keksuccino.fancymenu.events.SoftMenuReloadEvent;
+import de.keksuccino.fancymenu.menu.animation.AnimationHandler;
+import de.keksuccino.fancymenu.menu.fancy.MenuCustomization;
+import de.keksuccino.fancymenu.menu.fancy.menuhandler.MenuHandlerBase;
+import de.keksuccino.fancymenu.menu.fancy.menuhandler.MenuHandlerRegistry;
+import de.keksuccino.fancymenu.menu.fancy.menuhandler.custom.MainMenuHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LoadingOverlay;
+import net.minecraft.server.packs.resources.ReloadInstance;
+import net.neoforged.fml.earlydisplay.DisplayWindow;
+import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+
+@SuppressWarnings("rawtypes")
+@Mixin(NeoForgeLoadingOverlay.class)
+public abstract class MixinNeoForgeLoadingOverlay {
+	private static boolean firstScreenInit = true;
+	private MenuHandlerBase menuHandler = null;
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
+	private void beforeRenderScreenFancyMenu(GuiGraphics graphics, int mouseX, int mouseY, float partial, CallbackInfo info) {
+		if ((Minecraft.getInstance().screen != null) && (this.menuHandler != null) && MenuCustomization.isMenuCustomizable(Minecraft.getInstance().screen)) {
+			//Manually call onRenderPre of the screen's menu handler, because it doesn't get called automatically in the loading screen
+			this.menuHandler.onRenderPre(new RenderScreenEvent.Pre(Minecraft.getInstance().screen, graphics, mouseX, mouseY, partial));
+		}
+	}
+
+	//TODO übernehmen
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
+	private void afterRenderScreenFancyMenu(GuiGraphics graphics, int mouseX, int mouseY, float partial, CallbackInfo info) {
+		if ((Minecraft.getInstance().screen != null) && (this.menuHandler != null) && MenuCustomization.isMenuCustomizable(Minecraft.getInstance().screen)) {
+			//This is to correctly render the title menu
+			if (this.menuHandler instanceof MainMenuHandler m) {
+				m.drawToBackground(new ScreenBackgroundRenderedEvent(Minecraft.getInstance().screen, graphics));
+			}
+			//Manually call onRenderPost of the screen's menu handler, because it doesn't get called automatically in the loading screen
+			this.menuHandler.onRenderPost(new RenderScreenEvent.Post(Minecraft.getInstance().screen, graphics, mouseX, mouseY, partial));
+		}
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;init(Lnet/minecraft/client/Minecraft;II)V", shift = At.Shift.AFTER))
+	private void afterInitScreenFancyMenu(GuiGraphics graphics, int mouseX, int mouseY, float partial, CallbackInfo info) {
+		if (Minecraft.getInstance().screen != null) {
+			//Enable animation engine and customization engine before screen init to not block the customization engine
+			AnimationHandler.setReady(true);
+			MenuCustomization.allowScreenCustomization = true;
+			//Cache the menu handler of the screen to be able to call some of its render events
+			this.menuHandler = MenuHandlerRegistry.getHandlerFor(Minecraft.getInstance().screen);
+			//If it's the first time a screen gets initialized, soft-reload the screen's handler, so first-time stuff works when fading to the Title menu
+			if ((this.menuHandler != null) && firstScreenInit) {
+				this.menuHandler.onSoftReload(new SoftMenuReloadEvent(Minecraft.getInstance().screen));
+			}
+			firstScreenInit = false;
+			//Reset isNewMenu, so first-time stuff and on-load stuff works correctly, because the menu got initialized already (this is after screen init)
+			MenuCustomization.setIsNewMenu(true);
+			//Re-init current screen
+			//TODO übernehmen
+			MenuCustomization.reInitCurrentScreen();
+		}
+	}
+
+}

@@ -10,4 +10,6 @@ pluginManagement {
 }
 
 include(":core")
+include(":compat:fancymenu3")
+include(":compat:fancymenu2")
 include(":minecraft:1.21")
