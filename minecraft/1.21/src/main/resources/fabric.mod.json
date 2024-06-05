@@ -20,7 +20,8 @@
 	"icon": "assets/early-loading-screen-12100/icon.png",
 	"environment": "client",
 	"depends": {
-		"early-loading-screen": "${version}"
+		"early-loading-screen": "${version}",
+		"minecraft": "~1.21-"
 	},
 	"custom": {
 		"modmenu": {
