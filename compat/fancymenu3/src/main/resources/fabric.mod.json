@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "early-loading-screen-fancymenu",
+	"id": "early-loading-screen-fancymenu3",
 	"version": "${version}",
 	"name": "Forge Early Loading Screen: FancyMenu v3",
 	"description": "FancyMenu v3 support for Forge Early Loading Screen",
@@ -16,13 +16,11 @@
 		"issues": "https://github.com/Jab125/forge-early-loading-screen/issues"
 	},
 	"license": "LGPL-2.1-only",
-	"icon": "assets/early-loading-screen-fancymenu/icon.png",
+	"icon": "assets/early-loading-screen-fancymenu3/icon.png",
 	"environment": "client",
 	"depends": {
-		"early-loading-screen": "${version}"
-	},
-	"breaks": {
-		"fancymenu": "<3"
+		"early-loading-screen": "${version}",
+		"fancymenu": "^3"
 	},
 	"mixins": [
 		"early-loading-screen-fancymenu3.mixins.json"

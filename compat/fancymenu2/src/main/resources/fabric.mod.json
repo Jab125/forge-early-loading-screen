@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "early-loading-screen-fancymenu2",
+	"version": "${version}",
+	"name": "Forge Early Loading Screen: FancyMenu v2",
+	"description": "FancyMenu v2 support for Forge Early Loading Screen",
+	"authors": [
+		"Jab125"
+	],
+	"contributors": [
+		"Keksuccino"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/forge-early-loading-screen-fabric",
+		"sources": "https://github.com/Jab125/forge-early-loading-screen",
+		"issues": "https://github.com/Jab125/forge-early-loading-screen/issues"
+	},
+	"license": "LGPL-2.1-only",
+	"icon": "assets/early-loading-screen-fancymenu2/icon.png",
+	"environment": "client",
+	"depends": {
+		"early-loading-screen": "${version}",
+		"fancymenu": "^2"
+	},
+	"mixins": [
+		"early-loading-screen-fancymenu2.mixins.json"
+	],
+	"custom": {
+		"modmenu": {
+			"parent": "early-loading-screen",
+			"links": {
+				"modmenu.discord": "https://discord.gg/s2AtrCEKCn",
+				"modmenu.kofi": "https://ko-fi.com/Jab125/"
+			}
+		}
+	}
+}
