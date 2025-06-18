@@ -608,7 +608,10 @@ public class DisplayWindow implements ImmediateWindowProvider {
     public void updateModuleReads(final ModuleLayer layer) {
         Class<?> clz = null;
         try {
-            clz = Class.forName((FabricLoader.getInstance().isModLoaded("early-loading-screen-12100") && FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().compareTo(Version.parse("1.21-alpha.24.21.a")) >= 0) ? "com.jab125.earlyloadingscreen.mc12100.NeoForgeLoadingOverlay" : "net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay");
+            clz = Class.forName(((
+                    FabricLoader.getInstance().isModLoaded("early-loading-screen-12100") ||
+                    FabricLoader.getInstance().isModLoaded("early-loading-screen-12102")
+                                 ) && FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().compareTo(Version.parse("1.21-alpha.24.21.a")) >= 0) ? "com.jab125.earlyloadingscreen.mc12100.NeoForgeLoadingOverlay" : "net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay");
         } catch (ClassNotFoundException | VersionParsingException e) {
             throw new RuntimeException(e);
         }

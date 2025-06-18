@@ -21,7 +21,7 @@
 	"environment": "client",
 	"depends": {
 		"early-loading-screen": "${version}",
-		"minecraft": "~1.21-"
+		"minecraft": ">=1.21- <1.21.2-"
 	},
 	"custom": {
 		"modmenu": {

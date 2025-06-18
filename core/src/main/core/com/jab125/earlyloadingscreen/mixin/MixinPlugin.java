@@ -24,6 +24,8 @@ public class MixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
+            if (mixinClassName.contains("Accessor")) return true;
+            if (FabricLoader.getInstance().isModLoaded("early-loading-screen-12105")) return false;
             return !mixinClassName.contains("MinecraftClientMixin") || FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().compareTo(Version.parse("1.20.1")) > 0;
         } catch (VersionParsingException e) {
             throw new RuntimeException(e);

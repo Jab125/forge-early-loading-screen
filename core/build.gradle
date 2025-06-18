@@ -98,6 +98,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modTestmodRuntimeOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     include(project(path: ":minecraft:1.21"))
+    include(project(path: ":minecraft:1.21.2"))
     include(project(path: ":compat:fancymenu3"))
     include(project(path: ":compat:fancymenu2"))
 }
