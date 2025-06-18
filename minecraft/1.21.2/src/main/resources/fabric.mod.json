@@ -3,7 +3,7 @@
 	"id": "early-loading-screen-12102",
 	"version": "${version}",
 	"name": "Forge Early Loading Screen: 1.21.2",
-	"description": "1.21+ support for Forge Early Loading Screen",
+	"description": "1.21.2+ support for Forge Early Loading Screen",
 	"authors": [
 		"Jab125"
 	],
@@ -21,7 +21,7 @@
 	"environment": "client",
 	"depends": {
 		"early-loading-screen": "${version}",
-		"minecraft": ">=1.21.2- <1.21.5-"
+		"minecraft": ">=1.21.2-pre.2 <1.21.5-"
 	},
 	"custom": {
 		"modmenu": {

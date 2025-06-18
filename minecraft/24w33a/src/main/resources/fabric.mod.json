@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "early-loading-screen-24w33a",
+	"version": "${version}",
+	"name": "Forge Early Loading Screen: 24w33a",
+	"description": "24w33a support for Forge Early Loading Screen",
+	"authors": [
+		"Jab125"
+	],
+	"contributors": [
+		"NeoForged Team",
+		"MinecraftForge Team"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/forge-early-loading-screen-fabric",
+		"sources": "https://github.com/Jab125/forge-early-loading-screen",
+		"issues": "https://github.com/Jab125/forge-early-loading-screen/issues"
+	},
+	"license": "LGPL-2.1-only",
+	"icon": "assets/early-loading-screen-24w33a/icon.png",
+	"environment": "client",
+	"depends": {
+		"early-loading-screen": "${version}",
+		"minecraft": "1.21.2-alpha.24.33.a"
+	},
+	"custom": {
+		"modmenu": {
+			"parent": "early-loading-screen",
+			"links": {
+				"modmenu.discord": "https://discord.gg/s2AtrCEKCn",
+				"modmenu.kofi": "https://ko-fi.com/Jab125/"
+			}
+		}
+	}
+}
